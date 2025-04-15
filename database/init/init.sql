@@ -53,12 +53,12 @@ CREATE TABLE store_categories (
 CREATE TABLE products (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL UNIQUE,
-  price NUMERIC(50, 2),
-  size_x INT,
-  size_y INT,
-  size_z INT,
+  price NUMERIC(50, 2) CHECK (price IS NULL OR price >= 0),
+  size_x INT CHECK (size_x IS NULL OR size_x >= 0),
+  size_y INT CHECK (size_y IS NULL OR size_y >= 0),
+  size_z INT CHECK (size_z IS NULL OR size_z >= 0),
   description JSONB DEFAULT '[]',
-  diameter INT,
+  diameter INT CHECK (diameter IS NULL OR diameter >= 0),
   material TEXT,
   manufacturer TEXT,
   meta_keywords TEXT,
@@ -80,9 +80,9 @@ CREATE TABLE groups (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
   auto_price BOOLEAN DEFAULT FALSE,
-  sum NUMERIC(50, 2),
-  description JSONB DEFAULT '[]',
   price BOOLEAN DEFAULT FALSE,
+  sum NUMERIC(50, 2) CHECK (size_x IS NULL OR sum >= 0),
+  description JSONB DEFAULT '[]',
   published BOOLEAN DEFAULT FALSE,
   store_category_id INT REFERENCES store_categories(id)
 );
@@ -127,7 +127,8 @@ CREATE TABLE orders (
   date_end TIMESTAMP,
   description TEXT,
   closed BOOLEAN DEFAULT FALSE,
-  user_id INT REFERENCES users(id)
+  user_id INT REFERENCES users(id),
+  CONSTRAINT check_date_end CHECK (date_end IS NULL OR date_end >= date_start)
 );
 
 CREATE TABLE order_items (
@@ -140,3 +141,10 @@ CREATE TABLE order_items (
   product_id INT REFERENCES products(id),
   group_id INT REFERENCES groups(id)
 );
+
+CREATE TABLE group_items {
+  id SERIAL PRIMARY KEY,
+  serial_number INT NOT NULL,
+  product_id INT REFERENCES products(id),
+  group_id INT REFERENCES groups(id)
+}
