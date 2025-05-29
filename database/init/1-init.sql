@@ -7,16 +7,16 @@ CREATE TABLE images (
   height_original INT NOT NULL,
   jpeg TEXT NOT NULL UNIQUE,
   webp TEXT NOT NULL UNIQUE,
-  width INT NOT NULL,
-  height INT NOT NULL,
+  width INT NOT NULL CHECK (width > 0),
+  height INT NOT NULL CHECK (height > 0),
   jpeg_middle TEXT NOT NULL UNIQUE,
   webp_middle TEXT NOT NULL UNIQUE,
-  width_middle INT NOT NULL,
-  height_middle INT NOT NULL,
+  width_middle INT NOT NULL CHECK (width_middle > 0),
+  height_middle INT NOT NULL CHECK (height_middle > 0),
   jpeg_small TEXT NOT NULL UNIQUE,
   webp_small TEXT NOT NULL UNIQUE,
-  width_small INT NOT NULL,
-  height_small INT NOT NULL,
+  width_small INT NOT NULL CHECK (width_small > 0),
+  height_small INT NOT NULL CHECK (height_small > 0),
   cover BOOLEAN DEFAULT FALSE,
   mark TEXT,
   alt TEXT
@@ -81,7 +81,7 @@ CREATE TABLE groups (
   title TEXT NOT NULL,
   auto_price BOOLEAN DEFAULT FALSE,
   price BOOLEAN DEFAULT FALSE,
-  sum NUMERIC(50, 2) CHECK (size_x IS NULL OR sum >= 0),
+  sum NUMERIC(50, 2) CHECK (sum IS NULL OR sum >= 0),
   description JSONB DEFAULT '[]',
   published BOOLEAN DEFAULT FALSE,
   store_category_id INT REFERENCES store_categories(id)
@@ -134,17 +134,17 @@ CREATE TABLE orders (
 CREATE TABLE order_items (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
-  sum NUMERIC(50, 2) DEFAULT 0,
-  amount INT DEFAULT 1,
+  sum NUMERIC(50, 2) DEFAULT 0 CHECK (sum IS NULL OR sum >= 0),
+  amount INT DEFAULT 1 CHECK (amount IS NULL OR amount > 0),
   serial_number INT NOT NULL,
   order_id INT REFERENCES orders(id),
   product_id INT REFERENCES products(id),
   group_id INT REFERENCES groups(id)
 );
 
-CREATE TABLE group_items {
+CREATE TABLE group_items (
   id SERIAL PRIMARY KEY,
   serial_number INT NOT NULL,
   product_id INT REFERENCES products(id),
   group_id INT REFERENCES groups(id)
-}
+);
